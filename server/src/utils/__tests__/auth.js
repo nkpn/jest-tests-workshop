@@ -7,17 +7,17 @@ import {isPasswordAllowed, userToJSON} from '../auth'
 // https://github.com/kentcdodds/rtl-css-js/blob/96ec6a000d8fe03ae7d45603ece81eb185bf0618/src/__tests__/index.js
 
 describe('isPasswordAllowed only allows some passwords', () => {
-  const allowedPasswords = []
-  const disallowedPasswords = []
+  const allowedPasswords = ['skrasr.rer02.s', 'skfsar.rer02.s12124214']
+  const disallowedPasswords = ['1111', '', 123124]
 
   allowedPasswords.forEach(password => {
-    test(`allows ${password}`, () => {
+    test(`allows "${password}"`, () => {
       expect(isPasswordAllowed(password)).toBe(true)
     })
   })
 
   disallowedPasswords.forEach(password => {
-    test(`disallows ${password}`, () => {
+    test(`disallows "${password}"`, () => {
       expect(isPasswordAllowed(password)).toBe(false)
     })
   })
@@ -34,7 +34,7 @@ test('userToJSON excludes secure properties', () => {
     iat: Date.now() / 1000,
     hash: 'super-duper-long-string-of-nonsense',
     salt: 'shorter-string-of-nonsense',
-  }
+  } 
   const jsonUser = userToJSON(user)
   expect(jsonUser).toEqual(safeUser)
 })

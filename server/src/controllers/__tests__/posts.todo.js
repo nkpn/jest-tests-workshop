@@ -2,12 +2,39 @@
 // import db from '../../utils/db'
 // eslint-disable-next-line no-unused-vars
 import {initDb, generate} from 'til-server-test-utils'
+import * as postsController from '../posts'
 
 // I'll give this one to you. You want the database to be fresh
 // the initDb function will initialize the database with random users and posts
 // you can rely on that fact in your tests if you want.
 // (For example, getPosts should return all the posts in the DB)
 beforeEach(() => initDb())
+
+function setup() {
+  const req = {
+    params: {},
+    body: {},
+  }
+  const res = {}
+  Object.assign(res, {
+    status: jest.fn(
+      function status() {
+        return this
+      }.bind(res),
+    ),
+    json: jest.fn(
+      function json() {
+        return this
+      }.bind(res),
+    ),
+    send: jest.fn(
+      function send() {
+        return this
+      }.bind(res),
+    ),
+  })
+  return {req, res}
+}
 
 test('getPosts returns all posts in the database', async () => {
   // here you'll need to Arrange, Act, and Assert
@@ -16,6 +43,17 @@ test('getPosts returns all posts in the database', async () => {
   // Assert:
   //   - ensure that your mock object functions were called properly
   //   - BONUS: ensure that the posts returned are the ones in the database `await db.getPosts()`
+  const {req, res} = setup()
+
+  await postsController.getPosts(req, res)
+
+  expect(res.json).toHaveBeenCalledTimes(1)
+  const firstCall = res.json.mock.calls[0]
+  const firstArg = firstCall[0]
+  const {posts} = firstArg
+  expect(posts.length).toBeGreaterThan(0)
+  const actualPosts = await db.getPosts()
+  expect(posts).toEqual(actualPosts)
 })
 
 test('getPost returns the specific post', async () => {
